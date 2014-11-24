@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+				http://www.springframework.org/schema/context
+				http://www.springframework.org/schema/context/spring-context-3.2.xsd
+				http://www.springframework.org/schema/tx
+				http://www.springframework.org/schema/tx/spring-tx-3.2.xsd"
+	default-lazy-init="true" default-autowire="byName">
+
+	<!-- 请将jdbc.properties放置在web-inf/classes目录下 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<context:component-scan base-package="com.ailk" />
+	<context:annotation-config />
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+	<!-- 使用jdbc.properties的数据源时打开 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="maxIdleTime" value="${maxIdleTime}" />
+		<property name="maxPoolSize" value="${maxPoolSize}" />
+		<property name="minPoolSize" value="${minPoolSize}" />
+		<property name="initialPoolSize" value="${initialPoolSize}" />
+		<property name="idleConnectionTestPeriod" value="${idleConnectionTestPeriod}" />
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:myBatis.xml" />
+		<property name="transactionFactory">
+			<!--<bean class="org.apache.myBatis.transaction.managed.ManagedTransactionFactory"/> -->
+			<bean
+				class="org.mybatis.spring.transaction.SpringManagedTransactionFactory" />
+		</property>
+	</bean>
+
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+
+	<!--if you use jndi datasource, please use this TransactionManager instead 
+		of above -->
+	<!--<bean id="transactionManager" class="org.springframework.transaction.jta.WebLogicJtaTransactionManager" 
+		/> -->
+
+	<!--use @Transactional tag in your java code to deal transaction -->
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+</beans>

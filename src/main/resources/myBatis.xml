@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="defaultStatementTimeout" value="1500" />
+
+	</settings>
+	<typeAliases>
+		<!-- <typeAlias type="com.ailk.dns.dcas.report.domain.system.User" alias="user"/> -->
+	</typeAliases>
+
+	<mappers>
+		<!-- <mapper resource="mapper/User.xml"/> -->
+	</mappers>
+</configuration>
